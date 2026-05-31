@@ -1,0 +1,1 @@
+public record ArticleTitleCount(string ArticleTitle, int Count);

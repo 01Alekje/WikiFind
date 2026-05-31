@@ -1,0 +1,1 @@
+public record TitleUrl(string ArticleTitle, string Url);
