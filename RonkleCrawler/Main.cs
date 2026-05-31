@@ -1,9 +1,13 @@
+using System.Diagnostics;
+
 DBHandler dbHandler = new DBHandler();
 
 dbHandler.QueueArticle("https://en.wikipedia.org/wiki/Rick_Worthy");
 
+//var sw = Stopwatch.StartNew();
+
 // limit amount of pages to crawl per run
-await Crawl(500);
+await Crawl(50);
 
 async Task Crawl(int maxPages)
 {
@@ -19,6 +23,9 @@ async Task Crawl(int maxPages)
 
         foreach (var url in batch)
         {
+            Console.Clear();
+            Console.WriteLine($"{pageCount}/{maxPages} pages crawled");
+
             if (pageCount >= maxPages)
                 return;
 
@@ -27,9 +34,7 @@ async Task Crawl(int maxPages)
 
             // add new links to database, mark as uncrawled
             foreach (var link in scraper.GetLinks())
-            {
                 dbHandler.QueueArticle(link);
-            }
 
             // set current article to crawled
             dbHandler.UpdateArticle(url, scraper.GetArticleName());
