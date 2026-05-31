@@ -9,9 +9,12 @@ class Find
         var tokens = word.ToLower()
             .Split(' ', StringSplitOptions.RemoveEmptyEntries);
 
-        foreach (var token in tokens)
+        foreach (var r in results)
         {
-            MergeScores(scores, token);
+            if (!scores.ContainsKey(r.ArticleId))
+                scores[r.ArticleId] = 0;
+
+            scores[r.ArticleId] += r.Count;
         }
 
         return scores
@@ -34,7 +37,7 @@ class Find
         if (kwId == -1)
             return tuList;
 
-        List<ArticleKeywordCount> akcList = dbHandler.GetArticleKeywordCount(kwId, 1);
+        List<ArticleKeywordCount> akcList = dbHandler.GetArticleKeywordCount(kwId, 2);
 
         foreach (ArticleKeywordCount akc in akcList)
         {
@@ -47,7 +50,7 @@ class Find
 
         return tuList;
     }
-    
+
     private void MergeScores(Dictionary<int, int> scores, string word)
     {
         int kwId = dbHandler.GetKeywordId(word);
@@ -63,14 +66,16 @@ class Find
                 scores[r.ArticleId] = 0;
 
             scores[r.ArticleId] += r.Count;
-
-            // phrase boost
-            string title = dbHandler.GetArticleName(r.ArticleId);
+        }
+        
+        // phrase boost
+        string title = dbHandler.GetArticleName(r.ArticleId);
+        foreach (var r in results.Select(x => x.ArticleId).Distinct())
+        {
+            string title = dbHandler.GetArticleName(r);
 
             if (title.ToLower().Contains(word))
-            {
-                scores[r.ArticleId] += 5;
-            }
+                scores[r] += 5;
         }
     }
 

@@ -7,7 +7,7 @@ dbHandler.QueueArticle("https://en.wikipedia.org/wiki/Rick_Worthy");
 //var sw = Stopwatch.StartNew();
 
 // limit amount of pages to crawl per run
-await Crawl(50);
+await Crawl(100);
 
 async Task Crawl(int maxPages)
 {
