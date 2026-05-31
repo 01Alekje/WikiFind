@@ -13,8 +13,8 @@ class DBHandler
         _db = new SqliteConnection("Data Source=wikipedia.db");
         _db.Open();
 
-        // CAREFUL TO UNCOMMENT THIS
-        CreateTables();
+        // Will reset the entire database
+        //CreateTables();
     }
 
     public void InsertArticle(string url, string title)
@@ -26,6 +26,54 @@ class DBHandler
         ";
         cmd.Parameters.AddWithValue("@url", url);
         cmd.Parameters.AddWithValue("@title", title);
+        cmd.ExecuteNonQuery();
+    }
+
+    // update article after crawling
+    public void UpdateArticle(string url, string title)
+    {
+        using var cmd = _db.CreateCommand();
+        cmd.CommandText = @"UPDATE Article SET Title = @title, Crawled = 1 WHERE Url = @url";
+        cmd.Parameters.AddWithValue("@title", title);
+        cmd.Parameters.AddWithValue("@url", url);
+
+        cmd.ExecuteNonQuery();
+    }
+
+    public List<string> GetUncrawled(int limit)
+    {
+        using var cmd = _db.CreateCommand();
+
+        cmd.CommandText = @"
+            SELECT Url
+            FROM Article
+            WHERE Crawled = 0
+            LIMIT @limit;
+        ";
+
+        cmd.Parameters.AddWithValue("@limit", limit);
+
+        using var reader = cmd.ExecuteReader();
+
+        var result = new List<string>();
+
+        while (reader.Read())
+        {
+            result.Add(reader.GetString(0));
+        }
+
+        return result;
+    }
+
+    public void QueueArticle(string url)
+    {
+        using var cmd = _db.CreateCommand();
+        cmd.CommandText = @"
+            INSERT OR IGNORE INTO Article (Url) 
+            VALUES (@url);
+        ";
+        cmd.Parameters.AddWithValue("@url", url);
+
         cmd.ExecuteNonQuery();
     }
 
@@ -246,7 +294,8 @@ class DBHandler
             CREATE TABLE Article (
                 Id INTEGER PRIMARY KEY AUTOINCREMENT,
                 Url TEXT UNIQUE,
-                Title TEXT
+                Title TEXT NULL, 
+                Crawled INTEGER DEFAULT 0
             );
         ";
         cmd.ExecuteNonQuery();
