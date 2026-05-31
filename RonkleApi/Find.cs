@@ -9,23 +9,25 @@ class Find
         var tokens = word.ToLower()
             .Split(' ', StringSplitOptions.RemoveEmptyEntries);
 
-        foreach (var r in results)
+        foreach (var token in tokens)
         {
-            if (!scores.ContainsKey(r.ArticleId))
-                scores[r.ArticleId] = 0;
-
-            scores[r.ArticleId] += r.Count;
+            MergeScores(scores, token);
         }
 
         return scores
-            .OrderByDescending(x => x.Value)
+            .GroupBy(x => x.Key)
+            .Select(g => new
+            {
+                ArticleId = g.Key,
+                Score = g.Sum(x => x.Value)
+            })
+            .OrderByDescending(x => x.Score)
             .Select(x =>
             {
-                string name = dbHandler.GetArticleName(x.Key);
-                string url = dbHandler.GetUrl(x.Key);
+                string name = dbHandler.GetArticleName(x.ArticleId);
+                string url = dbHandler.GetUrl(x.ArticleId);
                 return new TitleUrl(name, url);
             })
-            .DistinctBy(x => x.Url)
             .ToList();
     }
 
@@ -58,7 +60,7 @@ class Find
         if (kwId == -1)
             return;
 
-        var results = dbHandler.GetArticleKeywordCount(kwId, 1);
+        var results = dbHandler.GetArticleKeywordCount(kwId, 2);
 
         foreach (var r in results)
         {
@@ -67,9 +69,8 @@ class Find
 
             scores[r.ArticleId] += r.Count;
         }
-        
-        // phrase boost
-        string title = dbHandler.GetArticleName(r.ArticleId);
+
+        // phrase boost (must be OUTSIDE loop)
         foreach (var r in results.Select(x => x.ArticleId).Distinct())
         {
             string title = dbHandler.GetArticleName(r);
