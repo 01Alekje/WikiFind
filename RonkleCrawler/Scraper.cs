@@ -34,19 +34,21 @@ class Scraper
         return _keywords;
     }
 
+    public List<string> GetLinks()
+    {
+        return links;
+    }
+
     public async Task Scrape()
     {
-        // get HTML as string
         string htmlString = await GetHtml();
 
-        // parse into HtmlDocument
         var doc = new HtmlDocument();
         doc.LoadHtml(htmlString);
         html = doc;
 
         ParseArticleName();
 
-        //ParseCategories();
         ParseKeywords();
     }
 
@@ -97,11 +99,6 @@ class Scraper
         }
     }
 
-    public List<string> GetLinks()
-    {
-        return links;
-    }
-
     private void ParseKeywords()
     {
         var stopWords = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
@@ -111,31 +108,14 @@ class Scraper
             "edit",
             "help",
             "citation needed",
-            "main page"
+            "main page",
+            "ISBN"
         };
 
         try
         {
             var allLinks = html.DocumentNode.SelectNodes("//div[@id='bodyContent']//a[@href]") ?? Enumerable.Empty<HtmlNode>();
-
-            /*var filteredKeywords = allLinks
-                // exclude links with certain classes
-                .Where(a => !a.GetAttributeValue("class", "").Split(' ').Contains("external"))
-                // exclude links inside certain IDs
-                .Where(a => a.Ancestors()
-                            .All(p => p.GetAttributeValue("id", "") != "catlinks" &&
-                                    p.GetAttributeValue("id", "") != "footer"))
-                // only internal /wiki/ links, no special pages
-                .Where(a =>
-                {
-                    var href = a.GetAttributeValue("href", "");
-                    return href.StartsWith("/wiki/") && !href.Contains(":");
-                })
-                // only keep links with visible text
-                .Select(a => a.InnerText.Trim())
-                .Where(text => !string.IsNullOrWhiteSpace(text))
-                .Where(text => !stopWords.Any(word => text.IndexOf(word, StringComparison.OrdinalIgnoreCase) >= 0));*/
-            var filteredKeywords = linkNodes
+            var filteredKeywords = allLinks
                 .Where(a =>
                 {
                     var href = a.GetAttributeValue("href", "");
