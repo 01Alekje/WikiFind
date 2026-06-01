@@ -8,7 +8,16 @@ WikiFind is made up of three parts; The WebCrawler, The WebAPI and the simple Fr
 
 ### The WebCrawler
 
-Running the WebCrawler:
+#### First Crawl
+Before running the crawler for the first time, make sure to start from a fun and random wikipedia-page. The default is "Rick Worthy", and can be changed in Ronkle/RonkleCrawler/Main.cs
+
+This line can be commented out after the first run, since the database will most likely already have a decent amount of links to go through, and thus won't need any more guidance. 
+
+__Make sure to set maxPages to a suitable size, and batch to 1 for the very first iteration.__
+
+After the first run, you can set batch to pretty much whatever you want. 
+
+Running the WebCrawler: (same not only for first run obviously)
 ```
 cd RonkleCrawler
 dotnet run
@@ -29,10 +38,7 @@ dotnet run
 ```
 
 ### The Frontend
-```
-cd RonkleWeb
-firefox index.html
-```
+Just open the webpage with your preferred browser. 
 
 Obviously, both the WebAPI and the Frontend are very simple, but it's enough to have a function search engine. 
 
@@ -41,5 +47,5 @@ Obviously, both the WebAPI and the Frontend are very simple, but it's enough to 
 _These are not strict requirements, but rather the only version of packages that I've used for this project_
 
  - .NET minimum 8.0.421
- - Microsoft.Data.Sqlite
- - HtmlAgilityPack
+ - (Any?) Microsoft.Data.Sqlite
+ - (Any?) HtmlAgilityPack
