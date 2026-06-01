@@ -1,20 +1,45 @@
 async function searchWord() {
-    console.log("searchWord called");
     word = (document.getElementById("search").value).toLowerCase();
     const response = await fetch("http://localhost:5282/search?word=" + word)
     const data = await response.json();
-    console.log(data);
-    
+
+    const header = document.getElementById("resultsHeader");
+    const resNotFound = document.getElementById("resNotFound");
+    const spacer = document.getElementById("spacer");
     const div = document.getElementById("results");
     div.innerHTML = "";
 
-    data.forEach(item => {
-        const a = document.createElement("a");
-        a.textContent = item.articleTitle;
-        a.target = "_blank";
-        a.href = item.url;
-        div.appendChild(a);
-    });
+    if (data == "Keyword not indexed") {
+        header.style.display = "none";
+        resNotFound.style.display = "flex";
+        spacer.style.display = "flex";
+    } else {
+        header.style.display = "flex";
+        resNotFound.style.display = "none";
+        spacer.style.display = "none";
+
+        data.forEach(item => {
+            const a = document.createElement("a");
+            const sec1 = document.createElement("section");
+            const sec2 = document.createElement("section");
+
+            sec1.textContent = item.articleTitle;
+            sec2.textContent = getShortUrl(item.url);
+            a.appendChild(sec1);
+            a.appendChild(sec2);
+
+            a.className = "result-holder";
+            a.target = "_blank";
+            a.href = item.url;
+
+            div.appendChild(a);
+        });
+    }
+}
+
+function getShortUrl(url) {
+    toReplace = "https://en.wikipedia.org/wiki/";
+    return url.replace(toReplace, '');
 }
 
 const el = document.getElementById("logo");

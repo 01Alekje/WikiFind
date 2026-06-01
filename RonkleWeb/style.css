@@ -11,7 +11,7 @@ body {
 }
 
 .spacer {
-    height: 24dvh;
+    height: 19dvh;
     width: 100dvw;
 }
 
@@ -45,15 +45,47 @@ h1 {
 }
 
 .results-container {
-    width: 45dvw;
+    width: 65dvw;
     min-height: 55dvh;
     display: flex;
     flex-direction: column;
 }
 
-.results-container a {
+/*.results-container a {
     font-size: 1.5rem;
     height: 4rem;
     color: #5de39a;
     text-decoration: none;
+}*/
+
+.header-container {
+    justify-content: space-around;
+    width: 65dvw;
+    color: #98625e;
+    font-style: italic;
+    font-size: 1.2rem;
+    display: none;
+}
+
+.result-holder {
+    padding: 2rem;
+    display: flex;
+    justify-content: space-between;
+    color: #5de39a;
+    font-size: 1.5rem;
+    text-decoration: none;
+}
+
+.result-holder:hover {
+    background-color: rgba(248, 248, 248, 0.026);
+    cursor: pointer;
+}
+
+#resNotFound {
+    display: none;
+    justify-content: center;
+    width: 65dvw;
+    color: #98625e;
+    font-style: italic;
+    font-size: 1.2rem;
 }
