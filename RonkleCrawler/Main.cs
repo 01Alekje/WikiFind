@@ -3,12 +3,12 @@ using System.Diagnostics;
 DBHandler dbHandler = new DBHandler();
 
 // Website for first run only, uncomment after
-//dbHandler.QueueArticle("https://en.wikipedia.org/wiki/Rick_Worthy");
+dbHandler.QueueArticle("https://en.wikipedia.org/wiki/Rick_Worthy");
 
 //var sw = Stopwatch.StartNew();
 
 // limit amount of pages to crawl per run
-await Crawl(50);
+await Crawl(250);
 
 async Task Crawl(int maxPages)
 {
@@ -34,8 +34,8 @@ async Task Crawl(int maxPages)
             await scraper.Scrape();
 
             // add new links to database, mark as uncrawled
-            //foreach (var link in scraper.GetLinks())
-            //    dbHandler.QueueArticle(link);
+            foreach (var link in scraper.GetLinks())
+                dbHandler.QueueArticle(link);
 
             // set current article to crawled
             dbHandler.UpdateArticle(url, scraper.GetArticleName());
