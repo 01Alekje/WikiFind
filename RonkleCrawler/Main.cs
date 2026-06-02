@@ -8,7 +8,7 @@ dbHandler.QueueArticle("https://en.wikipedia.org/wiki/Rick_Worthy");
 //var sw = Stopwatch.StartNew();
 
 // limit amount of pages to crawl per run
-await Crawl(100);
+await Crawl(10);
 
 async Task Crawl(int maxPages)
 {
@@ -30,17 +30,28 @@ async Task Crawl(int maxPages)
             if (pageCount >= maxPages)
                 return;
 
-            var scraper = new Scraper(new Uri(url));
-            await scraper.Scrape();
+            dbHandler.BeginTransaction();
 
-            // add new links to database, mark as uncrawled
-            foreach (var link in scraper.GetLinks())
-                dbHandler.QueueArticle(link);
+            try
+            {
+                var scraper = new Scraper(new Uri(url));
+                await scraper.Scrape();
 
-            // set current article to crawled
-            dbHandler.UpdateArticle(url, scraper.GetArticleName());
+                // add new links to database, mark as uncrawled
+                foreach (var link in scraper.GetLinks())
+                    dbHandler.QueueArticle(link);
 
-            AddKeywords(scraper, dbHandler.GetArticleId(url), keywordCache);
+                // set current article to crawled and get article id
+                int aId = dbHandler.UpdateArticle(url, scraper.GetArticleName());
+
+                AddKeywords(scraper, aId, keywordCache);
+
+                dbHandler.Commit();
+            }
+            catch
+            {
+                dbHandler.RollBack();
+            }
 
             pageCount++;
         }
