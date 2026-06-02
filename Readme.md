@@ -2,6 +2,8 @@
 
 WikiFind is a simple crawler, indexer and search engine for Wikipedia. WikiFind can start from virtually any single Wikipedia-article and crawl and index it's way through thousands of related articles. 
 
+The core idea with this project is to see how interleaved wikipedia-articles actually are, and how long it takes the crawler to find your favourite subject. _(Unless your favourite subject is Hitler, it will probably take a few hundred thousand articles before you reach your favourite subject)_
+
 ## How to run WikiFind
 
 WikiFind is made up of three parts; The WebCrawler, The WebAPI and the simple Frontend. 
