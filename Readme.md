@@ -51,3 +51,5 @@ _These are not strict requirements, but rather the only version of packages that
  - .NET minimum 8.0.421
  - (Any?) Microsoft.Data.Sqlite
  - (Any?) HtmlAgilityPack
+
+![Works on my machine](https://img.shields.io/badge/works_on_my_machine-✓-brightgreen)
