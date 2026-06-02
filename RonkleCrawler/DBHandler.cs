@@ -51,14 +51,14 @@ class DBHandler
     }
 
     // update article after crawling
-    public int UpdateArticle(string url, string title)
+    public void UpdateArticle(string url, string title)
     {
         using var cmd = _db.CreateCommand();
-        cmd.CommandText = @"UPDATE Article SET Title = @title, Crawled = 1 WHERE Url = @url SELECT Id FROM Article WHERE Url = @url;";
+        cmd.CommandText = @"UPDATE Article SET Title = @title, Crawled = 1 WHERE Url = @url";
         cmd.Parameters.AddWithValue("@title", title);
         cmd.Parameters.AddWithValue("@url", url);
 
-        return Convert.ToInt32(cmd.ExecuteScalar());
+        cmd.ExecuteNonQuery();
     }
 
     public List<string> GetUncrawled(int limit)

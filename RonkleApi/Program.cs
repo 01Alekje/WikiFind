@@ -1,8 +1,14 @@
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddCors();
+builder.Services.AddControllers();
 
 var app = builder.Build();
+
+app.UseDefaultFiles();
+app.UseStaticFiles();
+
+app.MapControllers();
 
 app.UseCors(x => x
     .AllowAnyOrigin()
@@ -19,16 +25,6 @@ app.MapGet("/search", (string word) =>
         return Results.BadRequest("Keyword not indexed");
 
     return Results.Ok(engine.Search(word));
-    //DBHandler db = new DBHandler();
-
-    //int kwId = db.GetKeywordId(word);
-
-    //if (kwId == -1)
-    //    return Results.BadRequest("Keyword cannot be processed");
-
-    //var results = db.GetArticleKeywordCount(kwId, 2);
-
-    //return Results.Ok(results);
 });
 
 app.Run();

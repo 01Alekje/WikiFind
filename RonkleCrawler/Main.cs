@@ -5,10 +5,8 @@ DBHandler dbHandler = new DBHandler();
 // Website for first run only, uncomment after
 dbHandler.QueueArticle("https://en.wikipedia.org/wiki/Rick_Worthy");
 
-//var sw = Stopwatch.StartNew();
-
 // limit amount of pages to crawl per run
-await Crawl(10);
+await Crawl(50);
 
 async Task Crawl(int maxPages)
 {
@@ -42,14 +40,17 @@ async Task Crawl(int maxPages)
                     dbHandler.QueueArticle(link);
 
                 // set current article to crawled and get article id
-                int aId = dbHandler.UpdateArticle(url, scraper.GetArticleName());
+                dbHandler.UpdateArticle(url, scraper.GetArticleName());
+
+                int aId = dbHandler.GetArticleId(url);
 
                 AddKeywords(scraper, aId, keywordCache);
 
                 dbHandler.Commit();
             }
-            catch
+            catch (Exception ex)
             {
+                Console.WriteLine(ex);
                 dbHandler.RollBack();
             }
 
