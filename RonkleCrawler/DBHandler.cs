@@ -17,6 +17,27 @@ class DBHandler
         //CreateTables();
     }
 
+    public void BeginTransaction()
+    {
+        using var cmd = _db.CreateCommand();
+        cmd.CommandText = "BEGIN TRANSACTION;";
+        cmd.ExecuteNonQuery();
+    }
+
+    public void RollBack()
+    {
+        using var cmd = _db.CreateCommand();
+        cmd.CommandText = "ROLLBACK;";
+        cmd.ExecuteNonQuery();
+    }
+
+    public void Commit()
+    {
+        using var cmd = _db.CreateCommand();
+        cmd.CommandText = "COMMIT;";
+        cmd.ExecuteNonQuery();
+    }
+
     public void InsertArticle(string url, string title)
     {
         using var cmd = _db.CreateCommand();
@@ -30,14 +51,14 @@ class DBHandler
     }
 
     // update article after crawling
-    public void UpdateArticle(string url, string title)
+    public int UpdateArticle(string url, string title)
     {
         using var cmd = _db.CreateCommand();
-        cmd.CommandText = @"UPDATE Article SET Title = @title, Crawled = 1 WHERE Url = @url";
+        cmd.CommandText = @"UPDATE Article SET Title = @title, Crawled = 1 WHERE Url = @url SELECT Id FROM Article WHERE Url = @url;";
         cmd.Parameters.AddWithValue("@title", title);
         cmd.Parameters.AddWithValue("@url", url);
 
-        cmd.ExecuteNonQuery();
+        return Convert.ToInt32(cmd.ExecuteScalar());
     }
 
     public List<string> GetUncrawled(int limit)
